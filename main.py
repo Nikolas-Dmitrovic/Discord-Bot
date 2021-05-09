@@ -1,3 +1,5 @@
+import time
+
 import discord
 import random
 import json
@@ -11,7 +13,9 @@ import youtube_search
 youtube_api_key = 'AIzaSyBZtYWgBBF3UfnWO82NBhfC6DSp2xkD28g'
 
 # TODO create command that allows people to add to boris's stause my taking in a message and adding it to a json file
-client = commands.Bot(command_prefix='.', help_command=None)
+intents = discord.Intents.default()
+intents.members = True
+client = commands.Bot(command_prefix='.', help_command=None ,intents = intents)
 
 
 # on ready events
@@ -46,6 +50,14 @@ async def on_member_remove(member):
 async def on_message(message):
     if message.content.startswith('hello'):
         print(message)
+
+
+@client.listen()
+async def on_message(message):
+    if message.content.startswith('!member'):
+        for guild in client.guilds:
+            for member in guild.members:
+                print(member)  # or do whatever you wish with the member detail
 
 
 # commands
@@ -264,7 +276,7 @@ async def play(ctx, keyword):
         pass
 
     search_vid = youtube_search.search(youtube_api_key, channel, voice, keyword)
-    vidid= search_vid.querry_one()
+    vidid = search_vid.querry_one()
     search_vid.fileRename(vidid)
     voice.play(discord.FFmpegPCMAudio("song.mp3"))
 
@@ -272,16 +284,56 @@ async def play(ctx, keyword):
 # TODO snake game
 @client.command()
 async def snake(ctx):
-    wms = ":white_medium_small_square:"
-    wls = ":white_medium_square:"
-    grid = [(wms+wms+wms+wms+wms+wms+wms),(wms+wms+wms+wms+wms+wms+wms),(wms+wms+wms+wms+wms+wms+wms),(wms+wms+wms+wms+wms+wms+wms),(wms+wms+wms+wms+wms+wms+wms)]
-    for i in grid:
-        await ctx.send(i)
+    # todo use emojo codes as var to bypass imbed message length max
+    wms = ":white_large_square:"
+    wms1 = ":white_large_square:"
+    wms2 = ":white_large_square:"
+    wms3 = ":white_large_square:"
+    wms4 = ":white_large_square:"
+    wms5 = ":white_large_square:"
+    wms6 = ":white_large_square:"
+    wms7 = ":white_large_square:"
+    wls = ":white_medium_small_square:"
+    grid = [(wms + wms + wms + wms + wms + wms + wms),
+            (wms + wms1 + wms2 + wms3 + wms4 + wms5 + wms6),
+            (wms + wms + wms + wms + wms + wms + wms), (wms + wms + wms + wms + wms + wms + wms),
+            (wms + wms + wms + wms + wms + wms + wms), (wms + wms + wms + wms + wms + wms + wms),
+            (wms + wms + wms + wms + wms + wms + wms)]
 
-    # embed
     colour = 0x00ff00
-    embedVar = discord.Embed(title="page one", description="Desc", color=colour)
+    embedVar = discord.Embed(color=colour)
+    for i in range(1):
+        embedVar.add_field(name="a",
+                           value=f"{grid[0]} \n {grid[1]} \n {grid[2]} \n {grid[3]} \n {grid[4]} \n {grid[5]} \n {grid[6]}",
+                           inline=False)
 
- 
- 
+    msg = await ctx.send(embed=embedVar)
+    apple = ":apple:"
+    print(grid[1])
+    line = grid[1].find(wms2)
+    print(line)
+
+    # embedVar.remove_field(0)
+    '''embedVar.set_field_at(index=0, name="a",
+                          value=f"{grid[0]} \n {line} \n {grid[2]} \n {grid[3]} \n {grid[4]} \n {grid[5]} \n {grid[6]}",
+                          inline=False)
+    time.sleep(2)
+    await msg.edit(embed=embedVar)'''
+
+
+# @someone command
+@client.command()
+async def someone(ctx):
+    # x = ctx.message.guild.members
+    guild = ctx.guild
+    names = guild.fetch_members(limit=150)
+    list = []
+    async for member in names:
+        list.append(member)
+    print()
+    user = random.choice(list)
+
+    await ctx.send(f'Hi {user.mention}')
+
+
 client.run("ODA0NDEyNTkwMjI2ODAwNjgy.YBL9mg.b08RoWS5kKWiNshkXCEgCTuQWM0")
