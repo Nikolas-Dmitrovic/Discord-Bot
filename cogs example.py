@@ -2,7 +2,9 @@ import discord
 from discord.ext import commands
 import os
 
-client = commands.Bot(command_prefix='.')
+intents = discord.Intents.default()
+intents.members = True
+client = commands.Bot(command_prefix='.', help_command=None ,intents = intents)
 
 @client.command()
 async def load(ctx, extension):

@@ -25,7 +25,14 @@ class search:
         else:
             pass
 
-    def querry_one(self):
+    def input_regonition(self):
+        if self.keyword[0:4] == "yout" or self.keyword[0:5] == "https" or self.keyword[0:3] == "www":
+            return self.keyword
+        else:
+            print(self.keyword)
+            return self.querry_keywordsearch()
+
+    def querry_keywordsearch(self):
         youtube = build('youtube', 'v3', developerKey=self.api_key)
         request = youtube.search().list(
             part='snippet',
@@ -36,9 +43,11 @@ class search:
         # TODO display results ask for choice lol
         response = request.execute()
         videoId = response['items'][0]['id']['videoId']
-        return videoId
+        videoURL = f'https://www.youtube.com/watch?v={videoId}'
+        return videoURL
 
-    def fileRename(self, videoId):
+
+    def fileRename(self, url):
         ydl_opts = {
             'format': 'bestaudio/best',
             'postprocessors': [{
@@ -48,7 +57,7 @@ class search:
             }],
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([f'https://www.youtube.com/watch?v={videoId}'])
+            ydl.download('https://www.youtube.com/watch?v=94zTrkr5_xY')
         for file in os.listdir("./"):
             if file.endswith(".mp3"):
                 os.rename(file, "song.mp3")

@@ -1,5 +1,5 @@
-import time
 
+import time
 import discord
 import random
 import json
@@ -216,10 +216,10 @@ async def join(ctx):
     await channel.connect()
 
 
-@join.error
+'''@join.error
 async def join_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-        await ctx.send('i am already in the voice call')
+        await ctx.send('i am already in the voice call')'''
 
 
 @client.command()
@@ -257,23 +257,25 @@ async def skip(ctx):
 
 # TODO add spotify api queue for voice chat https://developer.spotify.com/console/get-search-item/
 
-@client.command(aliases=['stop'])
-async def play(ctx, keyword):
+@client.command()
+async def play(ctx,keyword):
     channel = ctx.author.voice.channel
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
     song_there = os.path.isfile("song.mp3")
     try:
-        if song_there:
-            os.remove("song.mp3")
+        if voice.is_connect():
+            if song_there:
+                os.remove("song.mp3")
+        if not voice.is_connect():
+
+            channel.connect()
+            if song_there:
+                os.remove("song.mp3")
     except PermissionError:
         voice.stop()
         return
 
-    if not voice.is_connected:
-        await channel.connect()
-    else:
-        pass
 
     search_vid = youtube_search.search(youtube_api_key, channel, voice, keyword)
     vidid = search_vid.querry_one()
