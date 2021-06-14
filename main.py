@@ -1,5 +1,3 @@
-
-import time
 import discord
 import random
 import json
@@ -8,17 +6,13 @@ import os
 from discord.ext import commands, tasks
 from itertools import cycle
 import youtube_search
+from TOKENS import youtubeApiKey, discordApiKey
 
-# youtube api key
-youtube_api_key = 'AIzaSyBZtYWgBBF3UfnWO82NBhfC6DSp2xkD28g'
-
-# TODO create command that allows people to add to boris's stause my taking in a message and adding it to a json file
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix='.', help_command=None ,intents = intents)
+client = commands.Bot(command_prefix='.', help_command=None, intents=intents)
 
 
-# on ready events
 @client.event
 async def on_ready():
     change_status.start()
@@ -60,10 +54,6 @@ async def on_message(message):
                 print(member)  # or do whatever you wish with the member detail
 
 
-# commands
-# create list of commands to make
-
-
 # help command
 @client.command()
 async def help(ctx, message="1"):
@@ -72,7 +62,8 @@ async def help(ctx, message="1"):
         embedVar = discord.Embed(title="page one", description="Desc", color=colour)
         embedVar.add_field(name="Grandson", value="Makes grandma proud", inline=False)
         embedVar.add_field(name="clear",
-                           value="clear messages, state number of messges you want to remove plus one, can only be used by bot owner or server admins",
+                           value="clear messages, state number of messges you want to remove plus one, can only be "
+                                 "used by bot owner or server admins",
                            inline=False)
         embedVar.add_field(name="ping", value="pings the bot server", inline=False)
         embedVar.add_field(name="shutup", value="shutup followed by a user @, tells them to shut up", inline=False)
@@ -93,7 +84,8 @@ async def help(ctx, message="1"):
         embedVar.add_field(name="resume", value="resumes the paused sound", inline=False)
         embedVar.add_field(name="skip", value="skips the current playing sound", inline=False)
         embedVar.add_field(name="play",
-                           value="play followed by a search keyword, keyword searched in youtube engine and returns and play most popular option",
+                           value="play followed by a search keyword, keyword searched in youtube engine and returns "
+                                 "and play most popular option",
                            inline=False)
         await ctx.send(embed=embedVar)
     else:
@@ -126,7 +118,6 @@ async def grandson(ctx):
 
 
 @client.command()
-# @commands.has_permissions(manage_messages=True)
 @commands.check(is_it_me)
 async def clear(ctx, amount=1):
     await ctx.channel.purge(limit=amount)
@@ -150,7 +141,7 @@ async def shut_up(ctx, member: discord.Member):
 
 @client.command(aliases=['8ball'])
 async def _8ball(ctx, *, question='am i cool'):
-    respomces = ["It is certain.",
+    responses = ["It is certain.",
                  "It is decidedly so.",
                  "Without a doubt.",
                  "Yes - definitely.",
@@ -170,7 +161,7 @@ async def _8ball(ctx, *, question='am i cool'):
                  "My sources say no.",
                  "Outlook not so good.",
                  "Very doubtful."]
-    await ctx.send(f'Question: {question}\nAnswer: {random.choice(respomces)}')
+    await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
 
 
 @client.command(aliases=['who'])
@@ -185,27 +176,17 @@ async def insult(ctx, member: discord.Member):
     await ctx.send(f'{member.mention} {json_data["insult"]}')
 
 
-def get_quote():
+@client.command()
+async def inspire(ctx):
     response = requests.get("Https://zenquotes.io/api/random")
     json_data = json.loads(response.text)
     quote = json_data[0]['q'] + " -" + json_data[0]['a']
-    return (quote)
-
-
-@client.command()
-async def inspire(ctx):
-    quote = get_quote()
     await ctx.send(quote)
 
 
 @client.command()
 async def poop(ctx):
     await ctx.send("poopity scoop")
-
-
-@client.command()
-async def mytype(ctx):
-    await ctx.send("4'11 newly single latina chicks")
 
 
 # voice commands
@@ -216,10 +197,10 @@ async def join(ctx):
     await channel.connect()
 
 
-'''@join.error
+@join.error
 async def join_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-        await ctx.send('i am already in the voice call')'''
+        await ctx.send('i am already in the voice call')
 
 
 @client.command()
@@ -258,7 +239,7 @@ async def skip(ctx):
 # TODO add spotify api queue for voice chat https://developer.spotify.com/console/get-search-item/
 
 @client.command()
-async def play(ctx,keyword):
+async def play(ctx, keyword):
     channel = ctx.author.voice.channel
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
@@ -276,18 +257,16 @@ async def play(ctx,keyword):
         voice.stop()
         return
 
-
-    '''search_vid = youtube_search.search(youtube_api_key, channel, voice, keyword)
-    vidid = search_vid.querry_one()
+    search_vid = youtube_search.search(youtubeApiKey, channel, voice, keyword)
+    vidid = search_vid.querry_keywordsearch()
     search_vid.fileRename(vidid)
-    voice.play(discord.FFmpegPCMAudio("song.mp3"))'''
-
+    voice.play(discord.FFmpegPCMAudio("song.mp3"))
 
 
 # TODO snake game
 @client.command()
 async def snake(ctx):
-    # todo use emojo codes as var to bypass imbed message length max
+    # todo use emoji codes as var to bypass embed message length max
     wms = ":white_large_square:"
     wms1 = ":white_large_square:"
     wms2 = ":white_large_square:"
@@ -330,7 +309,7 @@ async def someone(ctx):
     # x = ctx.message.guild.members
     guild = ctx.guild
     names = guild.fetch_members(limit=150)
-    list = []
+    list = list()
     async for member in names:
         list.append(member)
     print()
@@ -339,4 +318,4 @@ async def someone(ctx):
     await ctx.send(f'Hi {user.mention}')
 
 
-client.run("ODA0NDEyNTkwMjI2ODAwNjgy.YBL9mg.b08RoWS5kKWiNshkXCEgCTuQWM0")
+client.run(discordApiKey)
